@@ -1,0 +1,39 @@
+<templateSet group="my">
+  <template name="l_controller" value="namespace app\$VAR0$\controller;&#10;class $VAR2$ extends \app\common\controller\Base&#10;{&#10;    protected $name = '$VAR3$';&#10;    protected $service_name = '$VAR2$';&#10;    &#10;    //列表&#10;    public function index(){&#10;        //1.验证参数&#10;    &#10;        //2.获取数据&#10;        $data = model($this-&gt;service_name,'service')-&gt;index($this-&gt;user,function ($query){&#10;    &#10;            return $query-&gt;where($VAR4$);&#10;                &#10;            },$this-&gt;i('page',1),$this-&gt;i('page_size',10));&#10;    &#10;        return success($data);&#10;    }&#10;&#10;    //详情&#10;    public function read(){&#10;    &#10;        $this-&gt;c('id',['number','r','min:0']);&#10;        $id = $this-&gt;i('id','0');&#10;    &#10;        $data = model($this-&gt;service_name,'service')-&gt;read($this-&gt;user,function ($query)use($id){&#10;            return $query-&gt;where('id',$id);&#10;        });&#10;        if($this-&gt;e($data)){&#10;            return error($data);&#10;        }else{&#10;            return success($data);&#10;        }&#10;    }&#10;&#10;    //新建/修改&#10;    public function save(){&#10;        $save = $this-&gt;i();&#10;    &#10;        if(!$this-&gt;h('id')){&#10;            //新增&#10;            &#10;    //            $data = array_default($data,[&#10;    //                //默认值&#10;    //            ]);&#10;    &#10;        }else{&#10;            //修改&#10;            $id = $this-&gt;i('id','0');&#10;            $record = model($this-&gt;service_name)-&gt;where('id',$id)-&gt;find();&#10;            if(!$record){&#10;                return error('该'.$this-&gt;name.'不存在或已被删除');&#10;            }&#10;    &#10;        }&#10;    &#10;        $data = model($this-&gt;service_name,'service')-&gt;save($this-&gt;user, $save);&#10;        if($this-&gt;e($data)){&#10;            return error($data);&#10;        }else{&#10;            $id = $data['data']['id'];&#10;            return success(model($this-&gt;service_name,'service')-&gt;read($this-&gt;user,function ($query)use($id){&#10;                return $query-&gt;where('id',$id);&#10;            }),'保存成功');&#10;        }&#10;    }&#10;&#10;    //删除&#10;    public function delete(){&#10;        $this-&gt;c('id',['number','r','min:0']);&#10;        $id = $this-&gt;i('id','0');&#10;      &#10;        $data = model('meeting','service')-&gt;delete($this-&gt;user, function ($query)use($id){&#10;            return $query-&gt;where('id',$id);&#10;        });&#10;        if($this-&gt;e($data)){&#10;            return error($data);&#10;        }else{&#10;            return success((object)null,'删除成功');&#10;        }&#10;    }&#10;}" description="定义controller" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR0" expression="" defaultValue="'idnex'" alwaysStopAt="true" />
+    <variable name="VAR3" expression="" defaultValue="'目标'" alwaysStopAt="true" />
+    <variable name="VAR2" expression="fileNameWithoutExtension()" defaultValue="" alwaysStopAt="true" />
+    <variable name="VAR4" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+  <template name="l_service" value="namespace app\$VAR0$\service;&#10;class $VAR1$ extends \app\common\service\Base&#10;{&#10;    protected $name = '$VAR2$';&#10;    protected $model_name = '$VAR1$';&#10;    &#10;    //列表&#10;    public function index($user,\Closure $where=null,$p,$ps){&#10;        $data = model($this-&gt;model_name);&#10;        if(!is_null($where)){&#10;            $data-&gt;where($where);&#10;        }&#10;        $data-&gt;order('id','desc');&#10;        if($p &amp;&amp; $ps){&#10;            $data-&gt;page($p, $ps);&#10;        }&#10;        return $this-&gt;success($data-&gt;select());&#10;    }&#10;&#10;    //详情&#10;    public function read($user,\Closure $where=null){&#10;        $data = model($this-&gt;model_name);&#10;        if(!is_null($where)){&#10;            $data-&gt;where($where);&#10;        }&#10;        $data = $data-&gt;find();&#10;        if(!$data){&#10;            return $this-&gt;error('未找到该'.$this-&gt;name);&#10;        }&#10;        return $this-&gt;success();&#10;        &#10;    }&#10;    &#10;    //新建/修改&#10;    public function save($user,$data){&#10;        if(!isset($data['id'])){&#10;            //新增&#10;            &#10;//            $data = array_default($data,[&#10;//                //默认值&#10;//                'c_time'    =&gt; MY_START_TIME&#10;//            ]);&#10;&#10;            $res = model($this-&gt;model_name)-&gt;data($data)-&gt;allowField(true)-&gt;isUpdate(false);&#10;            if($res-&gt;save()){&#10;                return $this-&gt;success($res);&#10;            }else{&#10;                return $this-&gt;error('新增失败');&#10;            }&#10;     &#10;        }else{&#10;            //修改&#10;            &#10;//            $data = array_default($data,[&#10;//                //默认值&#10;//            ]);&#10;            &#10;            $record = model($this-&gt;model_name)-&gt;where('id',$data['id'])-&gt;find();&#10;            if(!$record){&#10;                return $this-&gt;error('未找到该'.$this-&gt;name);&#10;            }&#10;            $record-&gt;data($data)-&gt;allowField(true);&#10;            if($record-&gt;save()){&#10;                return $this-&gt;success($record);&#10;            }else{&#10;                return $this-&gt;error('未做任何修改');&#10;            }&#10;        }&#10;    }&#10;&#10;    //删除&#10;    public function delete($user,\Closure $where){&#10;        $record = model($this-&gt;model_name)-&gt;where($where)-&gt;find();&#10;        if(!$record){&#10;            return $this-&gt;error('该'.$this-&gt;name.'不存在或已被删除');&#10;        }&#10;        if($record-&gt;destroy($record-&gt;id)){&#10;            return $this-&gt;success($record);&#10;        }else{&#10;            return $this-&gt;error('删除失败');&#10;        }&#10;    }&#10;}" description="定义service" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR0" expression="" defaultValue="'index'" alwaysStopAt="true" />
+    <variable name="VAR1" expression="fileNameWithoutExtension()" defaultValue="'index'" alwaysStopAt="true" />
+    <variable name="VAR2" expression="" defaultValue="'目标'" alwaysStopAt="true" />
+    <context>
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+  <template name="l_model" value="namespace app\common\model;&#10;class $VAR0$ extends Base{&#10;&#10;}" description="定义model" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR0" expression="fileNameWithoutExtension()" defaultValue="'index'" alwaysStopAt="true" />
+    <context>
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+  <template name="l_logic" value="namespace app\$VAR0$\logic;&#10;class $VAR1$ extends \app\common\logic\Base&#10;{&#10;&#10;    protected function $VAR2$(){&#10;        &#10;    }&#10;}" description="定义logic" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR0" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="VAR1" expression="fileNameWithoutExtension()" defaultValue="" alwaysStopAt="true" />
+    <variable name="VAR2" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+  <template name="l_isset" value="$VAR0$ = isset( )?( ):( );" description="?:" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR0" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="PHP" value="true" />
+    </context>
+  </template>
+</templateSet>
